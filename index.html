@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Socket IO Sample</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+  </head>
+  <body>
+    <div class="container" style="margin-top:40px">
+      <div class="row col-sm-6">
+        <form id="myForm" class="form-horizontal row col-sm-12" method="POST">
+          <div class="col-sm-10">
+            <input type="text" id="msg" class="form-control">
+          </div>
+          <div class="col-sm-1">
+            <input type="submit" value="send" class="btn btn-primary">
+          </div>
+        </form>
+
+        <div class="row col-sm-12">
+          <h3>Controls</h3>
+          <form class="form-horizontal" role="form">
+            <div class="form-group">
+              <label class="col-sm-6 control-label">今の照度</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="latest_value" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-6 control-label">今の状態</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="current_state" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-6 control-label">しきい値</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="border" value="">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="row col-sm-6">
+        <ul id="logs"></ul>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      $(function() {
+        var socket = io.connect();
+        // emit : sending event
+        // on : waiting for event
+        $('#myForm').submit(function(e) {
+          e.preventDefault();
+          var data = $('#msg').val();
+          socket.json.emit('emit_from_client', data);
+          $('#latest_value').val(data);
+          $('#msg').val('').focus();
+        });
+
+        socket.on('emit_from_server', function(data) {
+          $('#logs').prepend($('<li>').text(data.latest_value));
+          $('#current_state').val(data.current_state);
+          $('#border').val(data.border);
+        });
+
+      });
+    </script>
+  </body>
+</html>
