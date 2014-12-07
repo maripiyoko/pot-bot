@@ -9,20 +9,28 @@ app.listen(3000, function() {
 });
 
 function handler(req, res) {
-  var url_parts = url.parse(req.url, true);
-  //console.log(url_parts);
-  if(url_parts.path == '/status' || url_parts.path == '/state' || url_parts.path == '/oyu') {
-    sendCurrentState(res);
-  } else {
-    fs.readFile(__dirname + '/index.html', function(err, data) {
-      if(err) {
-        res.writeHead(500);
-        return res.end('Error');
-      }
-      res.writeHead(200);
-      res.write(data);
-      res.end();
-    });
+  switch (req.method) {
+    case 'GET':
+      fs.readFile(__dirname + '/index.html', function(err, data) {
+        if(err) {
+          res.writeHead(500);
+          return res.end('Error');
+        }
+        res.writeHead(200);
+        res.write(data);
+        res.end();
+      });
+      break;
+    case 'POST':
+      req.setEncoding('utf8');
+      req.on('data', function(chunk) {
+        console.log(chunk);
+        var data = '{"text": "'+current_state+'"}';
+        res.writeHead(200);
+        res.write(data);
+        res.end();
+      });
+      break;
   }
 };
 
