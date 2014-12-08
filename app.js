@@ -25,7 +25,7 @@ function handler(req, res) {
       req.setEncoding('utf8');
       req.on('data', function(chunk) {
         console.log(chunk);
-        var data = '{"text": "'+current_state+'"}';
+        var data = currentStateSlackMessage();
         res.writeHead(200);
         res.write(data);
         res.end();
@@ -101,4 +101,16 @@ var createResponse = function(data) {
     current_state: current_state,
     border: border
   };
+};
+
+var currentStateSlackMessage = function() {
+  var msg = '';
+  if(current_state == 'oyu') {
+    msg = 'お湯わいてるよ〜♪';
+  } else if(current_state == 'mizu') {
+    msg = 'まだ水・・';
+  } else {
+    msg = '・・よくわかんない';
+  }
+  return '{"text": "'+ msg +'"}';
 };
