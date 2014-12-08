@@ -4,6 +4,10 @@ var app = require('http').createServer(handler),
     fs = require('fs'),
     url = require('url');
 
+// Slack url
+var msg_post_url = process.env.NODE_POT_BOT_MSG_URL || '';
+console.log('msg_post_url='+msg_post_url);
+
 app.listen(3000, function() {
   console.log('Socket IO Server is listening on port 3000');
 });
@@ -92,6 +96,7 @@ var createResponse = function(data) {
     current_state = 'unknown';
   }
   if(latest_value > border) {
+    sendIfStateChange();
     current_state = 'oyu';
   } else {
     current_state = 'mizu';
@@ -101,6 +106,15 @@ var createResponse = function(data) {
     current_state: current_state,
     border: border
   };
+};
+
+var sendIfStateChange = function() {
+  if(current_state != 'oyu') {
+    // state change to oyu
+    if(msg_post_url) {
+      console.log('TODO send message to ' + msg_post_url);
+    }
+  }
 };
 
 var currentStateSlackMessage = function() {
