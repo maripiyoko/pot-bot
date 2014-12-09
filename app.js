@@ -108,11 +108,25 @@ var createResponse = function(data) {
   };
 };
 
+// send http POST request to chat service
+var request = require('request');
+
 var sendIfStateChange = function() {
   if(current_state != 'oyu') {
     // state change to oyu
     if(msg_post_url) {
-      console.log('TODO send message to ' + msg_post_url);
+      var options = {
+        uri: msg_post_url,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: 'お湯準備出来たかも！ :tea: ' })
+      };
+      request.post(options, function(error, response, body) {
+        if(!error && response.statusCode == 200) {
+          console.log(body);
+        } else {
+          console.log('error: ' + response.statusCode);
+        }
+      });
     }
   }
 };
